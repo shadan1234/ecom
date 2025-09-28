@@ -1,0 +1,5 @@
+{
+  "home": { "deliveryTo": "ଠିକଣାକୁ ଡିଲିଭରି", "searchPlaceholder": "ଆଟା, ଡାଲ୍ ଏବଂ ଅନ୍ୟାନ୍ୟ ଖୋଜନ୍ତୁ" },
+  "auth": { "loginHeading": "ଯୋଗଦେବା ପାଇଁ ଲଗଇନ୍ କରନ୍ତୁ", "enterOtp": "OTP ପ୍ରବେଶ କରନ୍ତୁ" },
+  "actions": { "add": "ଯୋଗ", "seeAll": "ସବୁ ଦେଖନ୍ତୁ", "proceed": "ଚେକଆଉଟ୍ କରନ୍ତୁ" }
+}

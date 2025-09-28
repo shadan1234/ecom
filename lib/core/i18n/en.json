@@ -1,0 +1,5 @@
+{
+  "home": { "deliveryTo": "Delivering to", "searchPlaceholder": "Search for 'atta, dal and more'"},
+  "auth": { "loginHeading": "Login to continue", "enterOtp": "Enter OTP" },
+  "actions": { "add": "Add", "seeAll": "See all", "proceed": "Proceed to Checkout" }
+}
