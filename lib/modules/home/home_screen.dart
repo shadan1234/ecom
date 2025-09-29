@@ -1,177 +1,139 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/fonts.dart';
 import '../../widgets/search_bar.dart' as custom_widgets;
 import '../../widgets/banner_carousel.dart';
 import '../../widgets/category_grid.dart';
 import '../../widgets/product_card.dart';
-import '../../widgets/offer_carousel.dart';
-import '../../providers/product_provider.dart';
-import '../../providers/banner_provider.dart';
+import '../../widgets/section_block.dart';
+import '../../modules/product_detail/product_detail_screen.dart';
+import '../../models/product.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  List<dynamic> products = [];
+  List<Map<String, String>> categories = [];
+  List<String> bannerImages = [];
+  Map<String, List<dynamic>> sections = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMockData();
+  }
+
+  Future<void> _loadMockData() async {
+    final productsResponse = await rootBundle.loadString('lib/mock_data/products.json');
+    final categoriesResponse = await rootBundle.loadString('lib/mock_data/categories.json');
+    final bannersResponse = await rootBundle.loadString('lib/mock_data/banners.json');
+    setState(() {
+      products = json.decode(productsResponse);
+      categories = (json.decode(categoriesResponse) as List).map((cat) => {
+        "icon": (cat["image"] ?? '').toString(),
+        "label": (cat["name"] ?? '').toString(),
+      }).toList().cast<Map<String, String>>();
+      bannerImages = (json.decode(bannersResponse) as List).map<String>((b) => b["image"] as String).toList();
+      // Create mock sections for demo
+      sections = {
+        'Best Sellers': products,
+        'Fresh Fruits': products,
+        'Dairy Deals': products,
+        'Snacks & Beverages': products,
+        'Bakery Specials': products,
+        'Top Offers': products,
+      };
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
-    final productProvider = Provider.of<ProductProvider>(context);
-    final bannerProvider = Provider.of<BannerProvider>(context);
-    // Sample sections for Blinkit-style headings
-    final sections = {
-      'Best Sellers': productProvider.sections['Best Sellers'] ?? [],
-      'Fresh Fruits': productProvider.sections['Fresh Fruits'] ?? [],
-      'Dairy Deals': productProvider.sections['Dairy Deals'] ?? [],
-      'Snacks & Beverages': productProvider.sections['Snacks & Beverages'] ?? [],
-      'Bakery Specials': productProvider.sections['Bakery Specials'] ?? [],
-      'Top Offers': productProvider.sections['Top Offers'] ?? [],
-      'Shop by Category': productProvider.sections['Shop by Category'] ?? [],
-    };
+    final isLoading = products.isEmpty || categories.isEmpty || bannerImages.isEmpty;
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: ListView(
-          children: [
-            // Top bar: location and profile
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: width * 0.04, vertical: height * 0.01),
-              child: Row(
-                children: [
-                  Icon(Icons.location_on, color: AppColors.primary, size: 22),
-                  SizedBox(width: 6),
-                  Expanded(
-                    child: Text('Delivering to Home, Bhubaneswar', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, fontFamily: AppFonts.poppins)),
+        child: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : ListView(
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: width * 0.04, vertical: height * 0.01),
+                  child: Row(
+                    children: [
+                      Icon(Icons.location_on, color: AppColors.primary, size: 22),
+                      SizedBox(width: 6),
+                      Expanded(
+                        child: Text('Delivering to Home, Bhubaneswar', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, fontFamily: AppFonts.poppins)),
+                      ),
+                      CircleAvatar(
+                        backgroundColor: AppColors.primary,
+                        child: Icon(Icons.person, color: Colors.white),
+                      ),
+                    ],
                   ),
-                  CircleAvatar(
-                    backgroundColor: AppColors.primary,
-                    child: Icon(Icons.person, color: Colors.white),
-                  ),
-                ],
-              ),
-            ),
-            // Prominent SearchBar
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: width * 0.04, vertical: height * 0.01),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(25),
-                  boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0,2))],
                 ),
-                child: const custom_widgets.SearchBar(),
-              ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: width * 0.04, vertical: height * 0.01),
+                  child: custom_widgets.SearchBar(),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: width * 0.04),
+                  child: BannerCarousel(images: bannerImages),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: width * 0.04, vertical: 12),
+                  child: CategoryGrid(categories: categories),
+                ),
+                ...sections.entries.map((entry) => Padding(
+                  padding: EdgeInsets.only(left: width * 0.04, right: width * 0.04, top: 18, bottom: 8),
+                  child: SectionBlock(
+                    title: entry.key,
+                    products: entry.value.map((p) => {
+                      'image': p['image'] ?? '',
+                      'title': p['name'] ?? '',
+                      'unit': p['category'] ?? '',
+                      'price': p['price'] ?? 0,
+                      'mrp': (p['price'] ?? 0) + 20,
+                      'discount': 10,
+                      'id': p['id'] ?? '',
+                      'raw': p,
+                    }).toList(),
+                    onProductTap: (productMap) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ProductDetailScreen(
+                            product: Product(
+                              id: productMap['id'],
+                              name: productMap['title'],
+                              altName: productMap['title'],
+                              imageUrl: productMap['image'],
+                              unit: productMap['unit'],
+                              price: productMap['price'],
+                              mrp: productMap['mrp'],
+                              discount: productMap['discount'],
+                              details: 'Details about ${productMap['title']}',
+                              units: ['1 kg', '500 g'],
+                              similar: [],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                )),
+              ],
             ),
-            SizedBox(height: height * 0.01),
-            // Banner carousel
-            BannerCarousel(images: bannerProvider.banners),
-            SizedBox(height: height * 0.02),
-            // Horizontal category scroll
-            CategoryGrid(),
-            SizedBox(height: height * 0.02),
-            // Quick actions
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: width * 0.04),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _QuickAction(icon: Icons.edit, label: 'Manual Entry'),
-                  _QuickAction(icon: Icons.camera_alt, label: 'Upload List'),
-                  _QuickAction(icon: Icons.card_giftcard, label: 'Packages'),
-                  _QuickAction(icon: Icons.add_box, label: 'Custom'),
-                ],
-              ),
-            ),
-            SizedBox(height: height * 0.02),
-            // Offer carousel
-            OfferCarousel(),
-            SizedBox(height: height * 0.02),
-            // Multiple horizontal product lists (Blinkit-style)
-            ...sections.entries.map((entry) => _SectionBlock(title: entry.key, products: entry.value)),
-            // Add more banners for visual richness
-            BannerCarousel(images: [
-              'https://images.unsplash.com/photo-1506744038136-46273834b3fb',
-              'https://images.unsplash.com/photo-1465101046530-73398c7f28ca',
-              'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
-            ], height: 120),
-            SizedBox(height: height * 0.02),
-            // Another section for more scrolling
-            _SectionBlock(title: 'Trending Now', products: productProvider.sections['Trending Now'] ?? []),
-            SizedBox(height: height * 0.08),
-          ],
-        ),
       ),
-    );
-  }
-}
-
-class _QuickAction extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  const _QuickAction({required this.icon, required this.label});
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
-          ),
-          padding: const EdgeInsets.all(10),
-          child: Icon(icon, color: AppColors.primary, size: 28),
-        ),
-        SizedBox(height: 6),
-        Text(label, style: TextStyle(fontSize: 12, fontFamily: AppFonts.poppins)),
-      ],
-    );
-  }
-}
-
-class _SectionBlock extends StatelessWidget {
-  final String title;
-  final List products;
-  const _SectionBlock({required this.title, required this.products});
-  @override
-  Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: width * 0.04),
-          child: Row(
-            children: [
-              Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontFamily: AppFonts.poppins)),
-              const Spacer(),
-              Text('See all', style: TextStyle(color: AppColors.primary, fontFamily: AppFonts.poppins)),
-            ],
-          ),
-        ),
-        SizedBox(height: 8),
-        SizedBox(
-          height: 220,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: products.length,
-            separatorBuilder: (_, __) => SizedBox(width: width * 0.03),
-            itemBuilder: (context, idx) {
-              final p = products[idx];
-              return ProductCard(
-                image: p.imageUrl ?? '',
-                title: p.name ?? '',
-                unit: p.unit ?? '',
-                price: p.price ?? 0,
-                mrp: p.mrp ?? 0,
-                discount: p.discount ?? 0,
-              );
-            },
-          ),
-        ),
-        SizedBox(height: 16),
-      ],
     );
   }
 }

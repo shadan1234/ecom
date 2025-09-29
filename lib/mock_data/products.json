@@ -1,0 +1,16 @@
+[
+  {
+    "id": "1",
+    "name": "Apple",
+    "image": "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce",
+    "price": 120,
+    "category": "Fruits"
+  },
+  {
+    "id": "2",
+    "name": "Banana",
+    "image": "https://images.unsplash.com/photo-1574226516831-e1dff420e8f8",
+    "price": 60,
+    "category": "Fruits"
+  }
+]

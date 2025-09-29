@@ -1,0 +1,12 @@
+[
+  {
+    "id": "1",
+    "name": "Fruits",
+    "image": "https://images.unsplash.com/photo-1465101046530-73398c7f28ca"
+  },
+  {
+    "id": "2",
+    "name": "Vegetables",
+    "image": "https://images.unsplash.com/photo-1502741338009-cac2772e18bc"
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "id": "1",
+    "name": "Fruit Combo",
+    "image": "https://images.unsplash.com/photo-1465101046530-73398c7f28ca",
+    "price": 200
+  },
+  {
+    "id": "2",
+    "name": "Veggie Combo",
+    "image": "https://images.unsplash.com/photo-1502741338009-cac2772e18bc",
+    "price": 150
+  }
+]

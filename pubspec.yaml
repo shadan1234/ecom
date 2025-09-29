@@ -54,3 +54,10 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   uses-material-design: true
+  assets:
+    - lib/mock_data/products.json
+    - lib/mock_data/categories.json
+    - lib/mock_data/banners.json
+    - lib/mock_data/packages.json
+    - lib/mock_data/manual_entry.json
+    - lib/mock_data/ocr_items.json

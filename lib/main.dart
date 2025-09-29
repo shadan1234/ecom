@@ -1,3 +1,4 @@
+import 'package:ecom/modules/manual_entry/manual_entry_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
@@ -10,16 +11,17 @@ import 'providers/ocr_provider.dart';
 import 'providers/banner_provider.dart';
 import 'modules/splash/splash_screen.dart';
 import 'modules/home/home_screen.dart';
-import 'modules/packages/packages_tab.dart';
-import 'modules/manual_entry/manual_entry_tab.dart';
-import 'modules/upload_ocr/upload_tab.dart';
 import 'modules/auth/login_screen.dart';
 import 'modules/auth/otp_screen.dart';
 import 'core/constants/colors.dart';
 import 'core/constants/fonts.dart';
+import 'modules/manual_entry/manual_entry_tab.dart';
+import 'modules/upload_ocr/upload_tab.dart';
+import 'modules/packages/packages_tab.dart';
 
 void main() {
   runApp(
+    
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
@@ -43,6 +45,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Ecom',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
@@ -69,7 +72,7 @@ class MainScaffold extends StatefulWidget {
 class _MainScaffoldState extends State<MainScaffold> {
   int _selectedIndex = 0;
   final List<Widget> _tabs = [
-    HomeScreen(), // Use modular HomeScreen only
+    HomeScreen(),
     PackagesTab(),
     ManualEntryTab(),
     UploadTab(),

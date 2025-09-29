@@ -25,7 +25,7 @@ class BannerCarousel extends StatelessWidget {
             ),
             clipBehavior: Clip.antiAlias,
             child: Image.network(
-              images[idx],
+              images[idx].isNotEmpty ? images[idx] : 'https://via.placeholder.com/400x160.png?text=Banner',
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) => const Icon(Icons.image, size: 40, color: Colors.grey),
             ),

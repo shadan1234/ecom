@@ -4,7 +4,8 @@ import 'horizontal_product_list.dart';
 class SectionBlock extends StatelessWidget {
   final String title;
   final List<Map<String, dynamic>> products;
-  const SectionBlock({Key? key, required this.title, required this.products}) : super(key: key);
+  final Function(Map<String, dynamic>)? onProductTap;
+  const SectionBlock({Key? key, required this.title, required this.products, this.onProductTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +23,7 @@ class SectionBlock extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 8),
-        HorizontalProductList(products: products),
+        HorizontalProductList(products: products, onProductTap: onProductTap),
         const SizedBox(height: 16),
       ],
     );

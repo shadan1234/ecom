@@ -3,7 +3,8 @@ import 'product_card.dart';
 
 class HorizontalProductList extends StatelessWidget {
   final List<Map<String, dynamic>> products;
-  const HorizontalProductList({Key? key, required this.products}) : super(key: key);
+  final Function(Map<String, dynamic>)? onProductTap;
+  const HorizontalProductList({Key? key, required this.products, this.onProductTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +23,7 @@ class HorizontalProductList extends StatelessWidget {
             price: p['price'],
             mrp: p['mrp'],
             discount: p['discount'],
+            onTap: () => onProductTap?.call(p),
           );
         },
       ),

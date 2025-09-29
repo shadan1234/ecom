@@ -1,0 +1,12 @@
+[
+  {
+    "id": "1",
+    "name": "Scanned Item 1",
+    "confidence": 0.95
+  },
+  {
+    "id": "2",
+    "name": "Scanned Item 2",
+    "confidence": 0.88
+  }
+]
